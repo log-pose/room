@@ -6,9 +6,10 @@ import {
   getMonitorById,
   updateMonitorById,
 } from "./controller";
+import { verifyToken } from "middleware";
 const router = Router();
 
-router.post("/", createMonitor);
+router.post("/", verifyToken, createMonitor);
 router.get("/", getAllMonitors);
 router.get("/:id", getMonitorById);
 router.put("/:id", updateMonitorById);
