@@ -6,8 +6,8 @@ CREATE TABLE IF NOT EXISTS Server  (
     server_name VARCHAR(255) NOT NULL,
     connection_string VARCHAR(255),
     kind_id INT,
-    heartbeat_interval INT DEFAULT 60,
-    retries INT DEFAULT 3,
+    heartbeat_interval INT,
+    retries INT ,
     user_id CHAR(36),
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
