@@ -68,7 +68,15 @@ export const createMonitor = async (req: IRequest, res: Response) => {
 };
 
 export const getMonitorById = async (req: Request, res: Response) => {
-  res.send("getMonitorById");
+  const { id } = req.params;
+
+  z.string().uuid().parse(id);
+
+  const monitor = await fetchMonitorById(id);
+  if (!monitor) {
+    return res.status(404).json({ message: "Monitor not found" });
+  }
+  return res.status(200).json({ message: "success", data: monitor });
 };
 export const getAllMonitors = async (req: Request, res: Response) => {
   res.send("getAllMonitors");
