@@ -53,7 +53,6 @@ export const createNewMonitor = async ({
   if (!kindId || !userId || !serverName) {
     throw "kind, userId, and serverName are required";
   }
-
   const id = randomUUID();
   z.string().uuid().parse(id);
   const query =
@@ -70,5 +69,60 @@ export const createNewMonitor = async ({
     interval,
     retries,
     userId,
+  ]);
+};
+
+export const fetchMonitorById = async (id: string) => {
+  const query = `SELECT * from Server where id = ?`;
+  const result = (await executeQueryWithParams(query, [id])) as any[];
+  return result[0];
+};
+
+export const fetchAllMonitorByUserId = async (userId: string) => {
+  const query = `SELECT * from Server where user_id = ?`;
+  const result = (await executeQueryWithParams(query, [userId])) as any[];
+  return result;
+};
+
+export const deleteMonitor = async (id: string) => {
+  const query = `DELETE from Server where id = ?`;
+  await executeQueryWithParams(query, [id]);
+};
+
+interface UpdateMonitorParams {
+  id: string;
+  kindId: number;
+  uri?: string | null;
+  ip?: string | null;
+  port?: number | null;
+  serverName: string;
+  connectionString?: string | null;
+  interval?: number;
+  retries?: number;
+}
+
+export const updateMonitor = async ({
+  id,
+  kindId,
+  uri,
+  ip,
+  port,
+  serverName,
+  connectionString,
+  interval = 60,
+  retries = 3,
+}: UpdateMonitorParams) => {
+  const query =
+    "UPDATE Server SET kind_id = ?, uri = ?, ip = ?, port = ?, server_name = ?, connection_string = ?, heartbeat_interval = ?, retries = ? WHERE id = ?";
+  await executeQueryWithParams(query, [
+    kindId,
+    uri,
+    ip,
+    port,
+    serverName,
+    connectionString,
+    interval,
+    retries,
+    id,
   ]);
 };
