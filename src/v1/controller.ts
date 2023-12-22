@@ -84,9 +84,67 @@ export const getAllMonitorsForUser = async (req: IRequest, res: Response) => {
   const monitors = await fetchAllMonitorByUserId(userId);
   return res.status(200).json({ message: "success", data: monitors });
 };
+
 export const updateMonitorById = async (req: Request, res: Response) => {
-  res.send("updateMonitorById");
+  const { id } = req.params;
+  const {
+    kind,
+    uri,
+    ip,
+    port,
+    serverName,
+    connectionString,
+    interval,
+    retries,
+  } = req.body;
+  try {
+    z.string().uuid().parse(id);
+  } catch (e) {
+    return res.status(400).json({ message: "Invalid id" });
+  }
+
+  const monitor = await fetchMonitorById(id);
+  if (!monitor) {
+    return res.status(404).json({ message: "Monitor not found" });
+  }
+
+  const { kindId, requiredStr } = await getRequiredMonitorParams(kind);
+  requiredStr?.forEach((param) => {
+    if (!req.body[param]) throw `${param} is required`;
+  });
+  const updateParams = {
+    id,
+    kindId,
+    uri,
+    ip,
+    port,
+    serverName,
+    connectionString,
+    interval,
+    retries,
+  };
+
+  try {
+    await updateMonitor(updateParams);
+    return res
+      .status(200)
+      .json({ message: `Server monitor updated successfully` });
+  } catch (e) {
+    return res.status(500).json({ message: "Something went wrong", error: e });
+  }
 };
 export const deleteMonitorById = async (req: Request, res: Response) => {
-  res.send("deleteMonitorById");
+  const { id } = req.params;
+  try {
+    z.string().uuid().parse(id);
+  } catch (e) {
+    return res.status(400).json({ message: "Invalid id" });
+  }
+
+  try {
+    await deleteMonitor(id);
+    return res.status(200).json({ message: "success" });
+  } catch (e) {
+    return res.status(500).json({ message: "Something went wrong", error: e });
+  }
 };
