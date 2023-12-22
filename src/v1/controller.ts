@@ -1,5 +1,12 @@
 import { Request, Response } from "express";
-import { createNewMonitor, getRequiredMonitorParams } from "./service";
+import {
+  createNewMonitor,
+  getRequiredMonitorParams,
+  fetchMonitorById,
+  fetchAllMonitorByUserId,
+  deleteMonitor,
+  updateMonitor,
+} from "./service";
 import { z } from "zod";
 import { IRequest } from "types";
 
@@ -27,11 +34,9 @@ export const createMonitor = async (req: IRequest, res: Response) => {
     const userId = req.user.id;
 
     createMonitorSchema.partial().parse({
-      kind,
       uri,
       ip,
       port,
-      serverName,
       connectionString,
       interval,
       retries,
@@ -58,7 +63,7 @@ export const createMonitor = async (req: IRequest, res: Response) => {
     await createNewMonitor(newMonitor);
     return res.status(201).json({ message: "created" });
   } catch (e: any) {
-    return res.status(400).json({ message: e });
+    return res.status(400).json({ message: "Something went wrong", error: e });
   }
 };
 
