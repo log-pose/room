@@ -78,8 +78,11 @@ export const getMonitorById = async (req: Request, res: Response) => {
   }
   return res.status(200).json({ message: "success", data: monitor });
 };
-export const getAllMonitors = async (req: Request, res: Response) => {
-  res.send("getAllMonitors");
+export const getAllMonitorsForUser = async (req: IRequest, res: Response) => {
+  const userId = req.user.id;
+  z.string().uuid().parse(userId);
+  const monitors = await fetchAllMonitorByUserId(userId);
+  return res.status(200).json({ message: "success", data: monitors });
 };
 export const updateMonitorById = async (req: Request, res: Response) => {
   res.send("updateMonitorById");
